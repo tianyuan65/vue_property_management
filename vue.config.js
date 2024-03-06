@@ -1,4 +1,9 @@
 const { defineConfig } = require('@vue/cli-service')
+const AutoImport = require('unplugin-auto-import/webpack')
+const Components = require('unplugin-vue-components/webpack')
+const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
+
+
 module.exports = defineConfig({
   transpileDependencies: true,
   // 设置为true时，在保存文件时会自动执行ESlint检查，在此关闭
@@ -10,5 +15,13 @@ module.exports = defineConfig({
         additionalData:`@import "./src/styles/styles.scss";`
       }
     }
-  }
+  },
+  plugins: [
+    AutoImport({
+      resolvers: [ElementPlusResolver()],
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()],
+    }),
+  ],
 })

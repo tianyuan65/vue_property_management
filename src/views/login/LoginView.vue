@@ -1,6 +1,7 @@
 <template>
   <div class="login">
     登录页
+    <el-button type="primary" round>Primary</el-button>
   </div>
 </template>
 
@@ -12,7 +13,7 @@
 
 <style lang="scss">
   .login{
-    background: aqua;
+    background: lightpink;
     height:100%;
   }
   html,body,#app{

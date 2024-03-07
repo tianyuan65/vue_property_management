@@ -114,3 +114,16 @@
                 }
             </style>
           ```
+* 2.2 引入表单模块
+    * 在elementplus官网的Form表单中找到自定义校验规则，将代码复制粘贴到LoginView组件中，对其进行一些简单的修改，将输入框前的文字用label标签包裹，改为邮箱、密码和重复密码。用el-form标签里的demo-ruleForm样式名，统一表单内所有元素的宽度、和在这个页面中的位置。最后，将el-button中原先的Submit改为登录，并给添加一个class属性的样式login-btn和block，使按钮的宽度和上面的输入框的宽度保持一致。
+        * ```
+            <el-form-item prop="pass">
+                <label>邮箱</label>
+                <el-input v-model="ruleForm.pass" type="password" autocomplete="off" />
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" class="login-btn block" @click="submitForm(ruleFormRef)"
+                    >登录</el-button>
+            </el-form-item>
+          ```
+* 2.3 

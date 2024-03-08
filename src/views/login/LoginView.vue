@@ -17,13 +17,13 @@
         :rules="rules"
         class="demo-ruleForm"
       >
-        <el-form-item prop="pass">
+        <el-form-item prop="username">
           <label>邮箱</label>
-          <el-input v-model="ruleForm.username" type="text" autocomplete="off" />
+          <el-input v-model="ruleForm.username" type="text" autocomplete="off" minlength="6" maxlength="15" />
         </el-form-item>
         <el-form-item prop="password">
           <label>密码</label>
-          <el-input v-model="ruleForm.password" type="password" autocomplete="off"/>
+          <el-input v-model="ruleForm.password" type="password" autocomplete="off" minlength="6" maxlength="15"/>
         </el-form-item>
         <!-- 登录选项时，不展示重复密码 -->
         <el-form-item prop="age" v-show="model==='register'">
@@ -68,12 +68,12 @@
         checkPass: '',
         age: '',
       })
+      // 在此设置以哪种方式触发表单验证，默认就是失去校验则验证
       const rules = reactive<FormRules<typeof ruleForm>>({
-        pass: [{ validator: validatePass, trigger: 'blur' }],
-        checkPass: [{ validator: validatePass2, trigger: 'blur' }],
-        age: [{ validator: checkAge, trigger: 'blur' }],
+        password: [{ validator: validatePass, trigger: 'blur' }],
+        repassword: [{ validator: validatePass2, trigger: 'blur' }],
+        username: [{ validator: checkUser, trigger: 'blur' }],
       })
-
 
       // 执行的函数中接收形参data
       function clickMenu(data:any) {
@@ -88,42 +88,40 @@
         model.value=data.type
       }
 
-      // 检查年龄
-      function checkAge(rule: any, value: any, callback: any){
+      // 检查邮箱
+      function checkUser(rule: any, value: any, callback: any){
+        // 创建邮箱正则来进行邮箱格式校验
+        let reg = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/; 
         if (!value) {
-          return callback(new Error('Please input the age'))
+          return callback(new Error('Please input the username'))
+        }else if(!reg.test(value)){  //根据邮箱正则判断，若不符和判断条件，则提示错误
+          return callback(new Error('Username format is incorrect'))
+        }else{
+          return callback()
         }
-        setTimeout(() => {
-          if (!Number.isInteger(value)) {
-            callback(new Error('Please input digits'))
-          } else {
-            if (value < 18) {
-              callback(new Error('Age must be greater than 18'))
-            } else {
-              callback()
-            }
-          }
-        }, 1000)
       }
 
       // 验证密码
       function validatePass (rule: any, value: any, callback: any) {
-        if (value === '') {
+        let reg = /^(?!\D+$)(?![^a-zA-Z]+$)\S{6,15}$/;// 验证密码 6至15位的字母+数字 
+        if (!value) {
           callback(new Error('Please input the password'))
-        } else {
-          if (ruleForm.checkPass !== '') {
-            if (!ruleFormRef.value) return
-            ruleFormRef.value.validateField('checkPass', () => null)
-          }
+        } else if(!reg.test(value)){  //根据密码正则判断，若不符和判断条件，则提示错误
+          callback(new Error('Password format is wrong,it must contain 6-15 letters + numbers'))
+        }else{
           callback()
         }
       }
 
       // 再次验证密码
       function validatePass2 (rule: any, value: any, callback: any) {
+        // 登录时没有重复密码的校验，所以在登录时取消重复密码的校验
+        if (model.value==='login') {  // 若是在登录的选项tab，则无需校验，直接跳出
+          callback()
+        }
         if (value === '') {
           callback(new Error('Please input the password again'))
-        } else if (value !== ruleForm.pass) {
+        } else if (value !== ruleForm.password) {
           callback(new Error("Two inputs don't match!"))
         } else {
           callback()
@@ -148,8 +146,7 @@
         if (!formEl) return
         formEl.resetFields()
       }
-
-
+      
       return {menuData,clickMenu,model,rules,submitForm,resetForm,ruleFormRef,ruleForm}
     }
   }

@@ -173,3 +173,50 @@
                 age: '',
             })
           ```
+* 2.4 elementplus表单验证
+    * 使用正则校验邮箱、密码和重复密码，在再次校验密码的函数validatePass2中，设置登录时不进行重复密码的校验。并在调用reactive声明的rules中修改原先的属性名改为password、repassword和username。
+        * ```
+            // 在此设置以哪种方式触发表单验证，默认就是失去校验则验证
+            const rules = reactive<FormRules<typeof ruleForm>>({
+                password: [{ validator: validatePass, trigger: 'blur' }],
+                repassword: [{ validator: validatePass2, trigger: 'blur' }],
+                username: [{ validator: checkUser, trigger: 'blur' }],
+            })
+            // 检查邮箱
+            function checkUser(rule: any, value: any, callback: any){
+                // 创建邮箱正则来进行邮箱格式校验
+                let reg = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/; 
+                if (!value) {
+                    return callback(new Error('Please input the username'))
+                }else if(!reg.test(value)){  //根据邮箱正则判断，若不符和判断条件，则提示错误
+                    return callback(new Error('Username format is incorrect'))
+                }else{
+                    return callback()
+                }
+            }
+            // 验证密码
+            function validatePass (rule: any, value: any, callback: any) {
+                let reg = /^(?!\D+$)(?![^a-zA-Z]+$)\S{6,15}$/;// 验证密码 6至15位的字母+数字 
+                if (!value) {
+                    callback(new Error('Please input the password'))
+                } else if(!reg.test(value)){  //根据密码正则判断，若不符和判断条件，则提示错误
+                    callback(new Error('Password format is wrong,it must contain 6-15 letters + numbers'))
+                }else{
+                    callback()
+                }
+            }
+            // 再次验证密码
+            function validatePass2 (rule: any, value: any, callback: any) {
+                // 登录时没有重复密码的校验，所以在登录时取消重复密码的校验
+                if (model.value==='login') {  // 若是在登录的选项tab，则无需校验，直接跳出
+                    callback()
+                }
+                if (value === '') {
+                    callback(new Error('Please input the password again'))
+                } else if (value !== ruleForm.password) {
+                    callback(new Error("Two inputs don't match!"))
+                } else {
+                    callback()
+                }
+            }
+          ```

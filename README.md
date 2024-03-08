@@ -126,4 +126,50 @@
                     >登录</el-button>
             </el-form-item>
           ```
-* 2.3 
+* 2.3 登录与注册Tab切换
+    * 1. 当点击切换登录和注册tab时，也就是当触发clickMenu事件函数时，需要对页面的排版做出一些小改变，登录时不需要呈现重复密码，登录和注册进行切换时，最下方的按钮上文本也需要根据此发生改变，变成一样的登录或注册。
+        * ```
+            <!-- 登录选项时，不展示重复密码 -->
+            <el-form-item prop="age" v-show="model==='register'">
+                <label>重复密码</label>
+                <el-input v-model.number="ruleForm.repassword" type="password"/>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" class="login-btn block" @click="submitForm(ruleFormRef)">
+                    <!-- 这里不能写死为登录，判断model值是否等于login，相等则展示登录，不相等则展示注册 -->
+                    {{model==="login" ? '登录' : '注册'}}
+                </el-button>
+            </el-form-item>
+            // 调用ref声明字符串的响应式数据
+            let model=ref("login")
+            function clickMenu(data:any){
+                ...
+                // 当点击任何一个选项时，将data中的type的属性值赋给model.value，使model.value的值随着点击发生改变
+                model.value=data.type
+            }
+          ```
+    * 2. 改变一下将从组件库中在赋值过来的el-form-item的一些属性的属性值。与邮箱的输入框双向绑定的pass改为username，密码的checkPass改为password，重复密码的age改为repassword，这些都是调用reactive声明的对象-ruleForm中初始化的属性，向ruleForm中添加username、password和repassword
+        * ```
+            <el-form-item prop="pass">
+                <label>邮箱</label>
+                <el-input v-model="ruleForm.username" type="text" autocomplete="off" />
+            </el-form-item>
+            <el-form-item prop="password">
+                <label>密码</label>
+                <el-input v-model="ruleForm.password" type="password" autocomplete="off"/>
+            </el-form-item>
+            <!-- 登录选项时，不展示重复密码 -->
+            <el-form-item prop="age" v-show="model==='register'">
+                <label>重复密码</label>
+                <el-input v-model.number="ruleForm.repassword" type="password"/>
+            </el-form-item>
+            // 初始化密码，验证码，年龄的状态，添加username、password、repassword
+            const ruleForm = reactive({
+                username:'',
+                password:'',
+                repassword:'',
+                pass: '',
+                checkPass: '',
+                age: '',
+            })
+          ```

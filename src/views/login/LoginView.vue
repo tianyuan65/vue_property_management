@@ -19,24 +19,22 @@
       >
         <el-form-item prop="pass">
           <label>邮箱</label>
-          <el-input v-model="ruleForm.pass" type="password" autocomplete="off" />
+          <el-input v-model="ruleForm.username" type="text" autocomplete="off" />
         </el-form-item>
-        <el-form-item prop="checkPass">
+        <el-form-item prop="password">
           <label>密码</label>
-          <el-input
-            v-model="ruleForm.checkPass"
-            type="password"
-            autocomplete="off"
-          />
+          <el-input v-model="ruleForm.password" type="password" autocomplete="off"/>
         </el-form-item>
-        <el-form-item prop="age">
+        <!-- 登录选项时，不展示重复密码 -->
+        <el-form-item prop="age" v-show="model==='register'">
           <label>重复密码</label>
-          <el-input v-model.number="ruleForm.age" />
+          <el-input v-model.number="ruleForm.repassword" type="password"/>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="login-btn block" @click="submitForm(ruleFormRef)"
-            >登录</el-button>
-          
+          <el-button type="primary" class="login-btn block" @click="submitForm(ruleFormRef)">
+            <!-- 这里不能写死为登录，判断model值是否等于login，相等则展示登录，不相等则展示注册 -->
+            {{model==="login" ? '登录' : '注册'}}
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -55,11 +53,17 @@
         {title:"注册",currentState:false,type:'register'},
       ])
 
+      // 调用ref声明字符串的响应式数据
+      let model=ref("login")
+
       // 
       const ruleFormRef = ref<FormInstance>()
 
-      // 初始化密码，验证码，年龄的状态
+      // 初始化密码，验证码，年龄的状态，添加username、password、repassword
       const ruleForm = reactive({
+        username:'',
+        password:'',
+        repassword:'',
         pass: '',
         checkPass: '',
         age: '',
@@ -80,6 +84,8 @@
         })
         // 然后紧接着将点击的currentState改为true
         data.currentState=true
+        // 当点击任何一个选项时，将data中的type的属性值赋给model.value，使model.value的值随着点击发生改变
+        model.value=data.type
       }
 
       // 检查年龄
@@ -144,8 +150,7 @@
       }
 
 
-      return {menuData,clickMenu,rules,submitForm,resetForm,ruleFormRef
-,ruleForm}
+      return {menuData,clickMenu,model,rules,submitForm,resetForm,ruleFormRef,ruleForm}
     }
   }
 </script>

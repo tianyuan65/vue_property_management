@@ -220,3 +220,46 @@
                 }
             }
           ```
+* 2.5 封装工具库
+    * 创建utils文件夹，在其下创建verification.js文件，用于存放校验邮箱和密码时会执行的回调checkEmail和checkPassword，这两个函数接收形参，用于接收输入的数据，且都根据传递的数据的正确与否返回true或false，在组件当中，引入这两个函数，并作为判断条件调用。
+        * ```
+            verification.js
+            export function checkEmail(data) {  //接收形参，用于接收输入的数据
+                // 创建邮箱正则来进行邮箱格式校验
+                let reg = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
+                // 判断若传递的数据为真，则返回true，否则返回false
+                return !reg.test(data) ? true :false
+            }
+
+            export function checkPassword(data) {  //接收形参，用于接收输入的数据
+                let reg = /^(?!\D+$)(?![^a-zA-Z]+$)\S{6,15}$/;// 验证密码 6至15位的字母+数字
+                // 判断若传递的数据为真，则返回true，否则返回false
+                return !reg.test(data) ? true : false
+            }
+            ...
+            LoginView.vue
+            // 引入两个工具函数
+            import {checkEmail,checkPassword} from '../../utils/verification'
+            ...
+            // 检查邮箱
+            function checkUser(rule: any, value: any, callback: any){
+                if (!value) {
+                    return callback(new Error('Please input the username'))
+                }else if(checkEmail(value)){  // 判断条件为引入的checkEmail函数，checkEmail函数内使用了正则规定了邮箱格式
+                    return callback(new Error('Username format is incorrect'))
+                }else{
+                    return callback()
+                }
+            }
+
+            // 验证密码
+            function validatePass (rule: any, value: any, callback: any) {
+                if (!value) {
+                    callback(new Error('Please input the password'))
+                } else if(checkPassword(value)){  // 判断条件为引入的checkPassword函数，checkPassword函数内使用了正则规定了密码格式
+                    callback(new Error('Password format is wrong,it must contain 6-15 letters + numbers'))
+                }else{
+                    callback()
+                }
+            }
+          ```

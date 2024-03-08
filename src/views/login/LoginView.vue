@@ -44,6 +44,8 @@
 <script lang="ts">
   import {reactive,ref} from 'vue'
   import type { FormInstance, FormRules } from 'element-plus'
+  // 引入两个工具函数
+  import {checkEmail,checkPassword} from '../../utils/verification'
   export default {
     name:'LoginView',
     setup(){
@@ -90,11 +92,9 @@
 
       // 检查邮箱
       function checkUser(rule: any, value: any, callback: any){
-        // 创建邮箱正则来进行邮箱格式校验
-        let reg = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/; 
         if (!value) {
           return callback(new Error('Please input the username'))
-        }else if(!reg.test(value)){  //根据邮箱正则判断，若不符和判断条件，则提示错误
+        }else if(checkEmail(value)){  // 判断条件为引入的checkEmail函数，checkEmail函数内使用了正则规定了邮箱格式
           return callback(new Error('Username format is incorrect'))
         }else{
           return callback()
@@ -103,10 +103,9 @@
 
       // 验证密码
       function validatePass (rule: any, value: any, callback: any) {
-        let reg = /^(?!\D+$)(?![^a-zA-Z]+$)\S{6,15}$/;// 验证密码 6至15位的字母+数字 
         if (!value) {
           callback(new Error('Please input the password'))
-        } else if(!reg.test(value)){  //根据密码正则判断，若不符和判断条件，则提示错误
+        } else if(checkPassword(value)){  // 判断条件为引入的checkPassword函数，checkPassword函数内使用了正则规定了密码格式
           callback(new Error('Password format is wrong,it must contain 6-15 letters + numbers'))
         }else{
           callback()
@@ -146,7 +145,7 @@
         if (!formEl) return
         formEl.resetFields()
       }
-      
+
       return {menuData,clickMenu,model,rules,submitForm,resetForm,ruleFormRef,ruleForm}
     }
   }

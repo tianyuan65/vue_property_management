@@ -319,4 +319,46 @@
             export default link  // 最后暴露link函数，便于在组件中直接引入调用，并从后台获取数据
           ```
 * 3.2 json-server
-    * 
+    * 通过json-server作为模拟数据，配合之前封装的数据请求(link.js)和url(url.js)，完成最基本的数据请求闭环，以后会陆续使用这种方式来实现数据请求的发送。在package.json设置json-server启动的配置别名mock，就可以在终端很方便地用```npm run mock```的方式启动，原先是在mock路径下，输入```json-server --watch ./src/mock/data.json --port 自定义端口号```来实现的。可以在组件中调用link函数来尝试是否能真的获取数据，需要提前配置好url.js文件，在其中设置获取数据的路径为启动json-server后得到的路径。
+        * ```
+            mock/data.json
+            {
+                "one":[
+                    {"name":"EZ"},
+                    {"name":"MF"},
+                    {"name":"NOC"},
+                    {"name":"VN"}
+                ]
+            }
+            ...
+            package.json
+            "scripts": {
+                ...
+                "mock":"json-server --watch ./src/mock/data.json --port 8090"
+            }
+            ...
+            api/url.js
+            let apiUrl={
+                one:"http://localhost:8090/one"
+            }
+            export default apiUrl
+            ...
+            LoginView.vue
+            // 提交
+            function submitForm (formEl: FormInstance | undefined) {
+                if (!formEl) return
+                formEl.validate((valid) => {
+                if (valid) {
+                    console.log('submit!')
+                    // 这个位置是成功发送请求，完成登录或注册的位置，尝试获取json-server的数据
+                    // 因为调用link函数返回的是一个promise对象，所以需要调用promise对象的then方法来解析获取数据
+                    link(apiUrl.one).then(value=>{
+                        console.log(value);
+                    })
+                } else {
+                    console.log('error submit!')
+                    return false
+                }
+                })
+            }
+          ```

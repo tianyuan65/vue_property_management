@@ -46,6 +46,9 @@
   import type { FormInstance, FormRules } from 'element-plus'
   // 引入两个工具函数
   import {checkEmail,checkPassword} from '../../utils/verification'
+  import link from '../../api/link.js'
+  import apiUrl from '../../api/url.js'
+  
   export default {
     name:'LoginView',
     setup(){
@@ -133,6 +136,12 @@
         formEl.validate((valid) => {
           if (valid) {
             console.log('submit!')
+            // 这个位置是成功发送请求，完成登录或注册的位置，尝试获取json-server的数据
+            // 因为调用link函数返回的是一个promise对象，所以需要调用promise对象的then方法来解析获取数据
+            link(apiUrl.one).then(value=>{
+              console.log(value);
+              
+            })
           } else {
             console.log('error submit!')
             return false

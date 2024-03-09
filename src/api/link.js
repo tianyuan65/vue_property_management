@@ -2,7 +2,7 @@ import service from '../utils/service'  // 引入拦截器
 // 封装相关的数据请求
 
 // 声明link函数，接收url、method、data、params为形参，发送请求时要用
-let link=(url,method,data,params)=>{
+let link=(url,method="get",data,params)=>{
     // 函数中返回一个Promise实例对象
     return new Promise((resolve,reject)=>{
         // 调用拦截器的request方法来发送请求

@@ -3,7 +3,8 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/login',  
+    // 这里原先是/login，但是服务器找不到我的8080/login，先写成这样，到时候改过来
+    path: '/',  
     name: 'login',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route

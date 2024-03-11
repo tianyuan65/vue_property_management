@@ -334,12 +334,12 @@
             package.json
             "scripts": {
                 ...
-                "mock":"json-server --watch ./src/mock/data.json --port 8090"
+                "mock":"json-server --watch ./src/mock/data.json --port 8888"
             }
             ...
             api/url.js
             let apiUrl={
-                one:"http://localhost:8090/one"
+                one:"http://localhost:8888/one"
             }
             export default apiUrl
             ...
@@ -362,3 +362,49 @@
                 })
             }
           ```
+* 3.3 Vue环境部署与baseURL配置
+    * 在根路径下创建.env.development和.env.production，在其中可以创建随机的变量文件，这个变量，可以根据不同的环境下，自动切换。将数据请求的地址，配置到了不同模式的环境变量当中，然后再在拦截器文件-service中，给axios的baseUrl设置默认请求路径，然后可以根据不同的环境，读取不同请求地址中的数据，从而在url封装之后，只封装在url.js文件中基本的路由地址，以达到根据不同的环境，进行动态的切换。但根据我目前代码和环境的情况，url.js中基本路由地址不能简写，因为我在组件当中无法获取到目前的开发环境，不写完整回调到奇怪的地方获取数据，当然后果是无法得到任何数据
+        * ```
+            .env.development
+            Vue_APP_API="http://localhost:8888"  #开发环境地址可以放这里
+            ...
+            service.js
+            // 声明axiosUrl为空字符串
+            let axiosUrl=''
+
+            // 判断条件为目前是否为development环境
+            if(process.env.NODE_ENV==="development"){
+                // 是则，使axiosURL的值为先前在.env.development文件中设置的获取数据的路径
+                axiosUrl=process.env.Vue_APP_API
+            }else{
+                // 否则，使axiosURL的值为其他的获取数据的路径
+                axiosUrl=process.env.Vue_APP_API
+            }
+
+            // 创建axios实例
+            const service=axios.create({
+                baseUrl:axiosUrl  // 声明默认请求地址
+            })
+            ...
+            LoginView.vue
+            // 提交
+            const submitForm=(formEl: FormInstance | undefined)=>{
+                if (!formEl) return
+                formEl.validate((valid) => {
+                if (valid) {
+                    console.log('submit!')
+                    // 这个位置是成功发送请求，完成登录或注册的位置，尝试获取json-server的数据
+                    // 因为调用link函数返回的是一个promise对象，所以需要调用promise对象的then方法来解析获取数据
+                    link(apiUrl.one).then((value:any)=>{
+                    console.log(value);
+                    
+                    })
+                } else {
+                    console.log('error submit!')
+                    return false
+                }
+                })
+            }
+          ```
+* 3.4 注册功能实现
+    * 

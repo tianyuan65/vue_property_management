@@ -5,6 +5,7 @@ const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
 
 
 module.exports = defineConfig({
+  publicPath:"./",  //设置静态资源
   transpileDependencies: true,
   // 设置为true时，在保存文件时会自动执行ESlint检查，在此关闭
   lintOnSave:false,
@@ -16,12 +17,14 @@ module.exports = defineConfig({
       }
     }
   },
-  plugins: [
-    AutoImport({
-      resolvers: [ElementPlusResolver()],
-    }),
-    Components({
-      resolvers: [ElementPlusResolver()],
-    }),
-  ],
+  configureWebpack:{
+    plugins: [
+      AutoImport({
+        resolvers: [ElementPlusResolver()],
+      }),
+      Components({
+        resolvers: [ElementPlusResolver()],
+      }),
+    ],
+  }
 })

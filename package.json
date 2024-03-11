@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "mock":"json-server --watch ./src/mock/data.json --port 8090",
+    "mock":"json-server --watch ./src/mock/data.json --port 8888",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"

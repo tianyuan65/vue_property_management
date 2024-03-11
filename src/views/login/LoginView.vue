@@ -41,122 +41,122 @@
   </div>
 </template>
 
-<script lang="ts">
-  import {reactive,ref} from 'vue'
+<script lang="ts" setup>
+  import {onMounted, reactive,ref} from 'vue'
   import type { FormInstance, FormRules } from 'element-plus'
   // 引入两个工具函数
   import {checkEmail,checkPassword} from '../../utils/verification'
   import link from '../../api/link.js'
   import apiUrl from '../../api/url.js'
   
-  export default {
-    name:'LoginView',
-    setup(){
-      // 初始化数据
-      const menuData=reactive([
-        {title:"登录",currentState:true,type:'login'},
-        {title:"注册",currentState:false,type:'register'},
-      ])
+  // 初始化数据
+  const menuData=reactive([
+    {title:"登录",currentState:true,type:'login'},
+    {title:"注册",currentState:false,type:'register'},
+  ])
 
-      // 调用ref声明字符串的响应式数据
-      let model=ref("login")
+  // 调用ref声明字符串的响应式数据
+  let model=ref("login")
 
-      // 
-      const ruleFormRef = ref<FormInstance>()
+  onMounted(()=>{
+    console.log('!!!');
+    
+    // 读取并输出环境变量的值，正常目前的环境下应该是输出"开发环境"，等用npm run build打包的时候就会输出"上线环境"
+    // console.log(process.env.Vue_APP_API);  //undefined
+  })
 
-      // 初始化密码，验证码，年龄的状态，添加username、password、repassword
-      const ruleForm = reactive({
-        username:'',
-        password:'',
-        repassword:'',
-        pass: '',
-        checkPass: '',
-        age: '',
-      })
-      // 在此设置以哪种方式触发表单验证，默认就是失去校验则验证
-      const rules = reactive<FormRules<typeof ruleForm>>({
-        password: [{ validator: validatePass, trigger: 'blur' }],
-        repassword: [{ validator: validatePass2, trigger: 'blur' }],
-        username: [{ validator: checkUser, trigger: 'blur' }],
-      })
+  // 
+  const ruleFormRef = ref<FormInstance>()
 
-      // 执行的函数中接收形参data
-      function clickMenu(data:any) {
-        // 数据循环
-        menuData.forEach(element=>{
-          // 点击任何一个选项后，将所有的currentState变为false，
-          element.currentState=false
-        })
-        // 然后紧接着将点击的currentState改为true
-        data.currentState=true
-        // 当点击任何一个选项时，将data中的type的属性值赋给model.value，使model.value的值随着点击发生改变
-        model.value=data.type
-      }
+  // 执行的函数中接收形参data
+  const clickMenu=(data:any)=>{
+    // 数据循环
+    menuData.forEach(element=>{
+      // 点击任何一个选项后，将所有的currentState变为false，
+      element.currentState=false
+    })
+    // 然后紧接着将点击的currentState改为true
+    data.currentState=true
+    // 当点击任何一个选项时，将data中的type的属性值赋给model.value，使model.value的值随着点击发生改变
+    model.value=data.type
+  }
 
-      // 检查邮箱
-      function checkUser(rule: any, value: any, callback: any){
-        if (!value) {
-          return callback(new Error('Please input the username'))
-        }else if(checkEmail(value)){  // 判断条件为引入的checkEmail函数，checkEmail函数内使用了正则规定了邮箱格式
-          return callback(new Error('Username format is incorrect'))
-        }else{
-          return callback()
-        }
-      }
-
-      // 验证密码
-      function validatePass (rule: any, value: any, callback: any) {
-        if (!value) {
-          callback(new Error('Please input the password'))
-        } else if(checkPassword(value)){  // 判断条件为引入的checkPassword函数，checkPassword函数内使用了正则规定了密码格式
-          callback(new Error('Password format is wrong,it must contain 6-15 letters + numbers'))
-        }else{
-          callback()
-        }
-      }
-
-      // 再次验证密码
-      function validatePass2 (rule: any, value: any, callback: any) {
-        // 登录时没有重复密码的校验，所以在登录时取消重复密码的校验
-        if (model.value==='login') {  // 若是在登录的选项tab，则无需校验，直接跳出
-          callback()
-        }
-        if (value === '') {
-          callback(new Error('Please input the password again'))
-        } else if (value !== ruleForm.password) {
-          callback(new Error("Two inputs don't match!"))
-        } else {
-          callback()
-        }
-      }
-
-      // 提交
-      function submitForm (formEl: FormInstance | undefined) {
-        if (!formEl) return
-        formEl.validate((valid) => {
-          if (valid) {
-            console.log('submit!')
-            // 这个位置是成功发送请求，完成登录或注册的位置，尝试获取json-server的数据
-            // 因为调用link函数返回的是一个promise对象，所以需要调用promise对象的then方法来解析获取数据
-            link(apiUrl.one).then(value=>{
-              console.log(value);
-              
-            })
-          } else {
-            console.log('error submit!')
-            return false
-          }
-        })
-      }
-
-      // 重置表单
-      function resetForm (formEl: FormInstance | undefined) {
-        if (!formEl) return
-        formEl.resetFields()
-      }
-
-      return {menuData,clickMenu,model,rules,submitForm,resetForm,ruleFormRef,ruleForm}
+  // 检查邮箱
+  const checkUser=(rule: any, value: any, callback: any)=>{
+    if (!value) {
+      return callback(new Error('Please input the username'))
+    }else if(checkEmail(value)){  // 判断条件为引入的checkEmail函数，checkEmail函数内使用了正则规定了邮箱格式
+      return callback(new Error('Username format is incorrect'))
+    }else{
+      return callback()
     }
+  }
+
+  // 验证密码
+  const validatePass=(rule: any, value: any, callback: any)=>{
+    if (!value) {
+      callback(new Error('Please input the password'))
+    } else if(checkPassword(value)){  // 判断条件为引入的checkPassword函数，checkPassword函数内使用了正则规定了密码格式
+      callback(new Error('Password format is wrong,it must contain 6-15 letters + numbers'))
+    }else{
+      callback()
+    }
+  }
+
+  // 再次验证密码
+  const validatePass2=(rule: any, value: any, callback: any)=>{
+    // 登录时没有重复密码的校验，所以在登录时取消重复密码的校验
+    if (model.value==='login') {  // 若是在登录的选项tab，则无需校验，直接跳出
+      callback()
+    }
+    if (value === '') {
+      callback(new Error('Please input the password again'))
+    } else if (value !== ruleForm.password) {
+      callback(new Error("Two inputs don't match!"))
+    } else {
+      callback()
+    }
+  }
+
+  // 初始化密码，验证码，年龄的状态，添加username、password、repassword
+  const ruleForm = reactive({
+    username:'',
+    password:'',
+    repassword:'',
+    pass: '',
+    checkPass: '',
+    age: '',
+  })
+  // 在此设置以哪种方式触发表单验证，默认就是失去校验则验证
+  const rules = reactive<FormRules<typeof ruleForm>>({
+    password: [{ validator: validatePass, trigger: 'blur' }],
+    repassword: [{ validator: validatePass2, trigger: 'blur' }],
+    username: [{ validator: checkUser, trigger: 'blur' }],
+  })
+
+  // 提交
+  const submitForm=(formEl: FormInstance | undefined)=>{
+    if (!formEl) return
+    formEl.validate((valid) => {
+      if (valid) {
+        console.log('submit!')
+        // 这个位置是成功发送请求，完成登录或注册的位置，尝试获取json-server的数据
+        // 因为调用link函数返回的是一个promise对象，所以需要调用promise对象的then方法来解析获取数据
+        link(apiUrl.one).then((value:any)=>{
+          console.log(value);
+          
+        })
+      } else {
+        console.log('error submit!')
+        return false
+      }
+    })
+  }
+
+  // 重置表单
+  const resetForm=(formEl: FormInstance | undefined)=>{
+    if (!formEl) return
+    formEl.resetFields()
   }
 </script>
 

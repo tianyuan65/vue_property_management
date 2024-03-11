@@ -407,4 +407,35 @@
             }
           ```
 * 3.4 注册功能实现
-    * 
+    * 输入正确规格的邮箱和密码，点击注册按钮后跳转到登录部分，并提示成功注册的提示框。值得注意的是，每次注册时输入的邮箱和密码，都可以在data.json文件中查看到，因为注册时调用link函数时，method时POST，所以这一步是向数据库当中传递/添加用户的数据，以便于在之后登陆时从数据库中获取数据，以实现登录，跳转到主页面，以及在主页面展示用户名。注册成功与否时需要弹出的提示框，在element-plus官网中引入调用。
+        * ```
+            LoginView.vue
+            // 注册时调用的该函数参数是apiUrl.register，"POST",data
+            link(apiUrl.register,"POST",data).then((value:any)=>{
+                // 判断，若成功传递数据了，则将data转换为数组时，长度就不是0
+                if (Object.keys(value.data).length !== 0) {
+                // 输入邮箱密码注册成功后，就可以跳到登录部分；
+                ElMessage({
+                    showClose: true,
+                    message: 'Congrats, this is a success message.',
+                    type: 'success',
+                })
+                model.value="login"
+                // 遍历menuData
+                menuData.forEach(menudata=>{
+                    // 将其中currentState属性的值全部改为false
+                    menudata.currentState=false
+                })
+                // 全部改为false后，将menuData数组里第一个元素的，也就是登录的currentState改为true
+                menuData[0].currentState=true
+                } else {
+                // 若注册失败，则给用户一个失败了的提示
+                ElMessage({
+                    showClose: true,
+                    message: 'Oops, this is a error message.',
+                    type: 'error',
+                })
+                }
+            })
+          ```
+        * ![简易用户数据库一览](images/输入邮箱和密码，点击注册按钮后，就会在data.json展示POST到数据库的数据.png)

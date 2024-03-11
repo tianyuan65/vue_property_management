@@ -1,8 +1,39 @@
 {
-    "one":[
-        {"name":"EZ"},
-        {"name":"MF"},
-        {"name":"NOC"},
-        {"name":"VN"}
-    ]
+  "register": [
+    {
+      "id": 1,
+      "name": "admin@163.com",
+      "pwd": "admin123"
+    },
+    {
+      "id": "e0e8",
+      "name": "23q@qq.com",
+      "pwd": "1234567890q"
+    },
+    {
+      "id": "d06b",
+      "name": "667@qq.com",
+      "pwd": "09876q"
+    },
+    {
+      "id": "80cc",
+      "name": "234@qq.com",
+      "pwd": "654321q"
+    },
+    {
+      "id": "0e61",
+      "name": "0987@163.com",
+      "pwd": "654321m"
+    },
+    {
+      "id": "f8cb",
+      "name": "qwer@163.com",
+      "pwd": "123456c"
+    },
+    {
+      "id": "f917",
+      "name": "rewq@163.com",
+      "pwd": "2345cn"
+    }
+  ]
 }

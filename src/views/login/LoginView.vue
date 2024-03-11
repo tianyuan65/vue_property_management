@@ -28,7 +28,7 @@
         <!-- 登录选项时，不展示重复密码 -->
         <el-form-item prop="age" v-show="model==='register'">
           <label>重复密码</label>
-          <el-input v-model.number="ruleForm.repassword" type="password"/>
+          <el-input v-model="ruleForm.repassword" type="password"/>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" class="login-btn block" @click="submitForm(ruleFormRef)">
@@ -43,7 +43,8 @@
 
 <script lang="ts" setup>
   import {onMounted, reactive,ref} from 'vue'
-  import type { FormInstance, FormRules } from 'element-plus'
+  import type { FormInstance, FormRules  } from 'element-plus'
+  import {ElMessage} from 'element-plus'
   // 引入两个工具函数
   import {checkEmail,checkPassword} from '../../utils/verification'
   import link from '../../api/link.js'
@@ -139,13 +140,49 @@
     if (!formEl) return
     formEl.validate((valid) => {
       if (valid) {
-        console.log('submit!')
-        // 这个位置是成功发送请求，完成登录或注册的位置，尝试获取json-server的数据
-        // 因为调用link函数返回的是一个promise对象，所以需要调用promise对象的then方法来解析获取数据
-        link(apiUrl.one).then((value:any)=>{
-          console.log(value);
-          
-        })
+        // 在此判断点击的是登录还是注册时的按钮
+        if (model.value==="login") {
+          console.log("login")
+        }else{
+          console.log("register");
+          // 需要作为参数传递的数据，是注册时要用的，是传递到服务器的数据
+          let data={
+            // name属性的值为与el-input双向绑定的ruleForm.username
+            name:ruleForm.username,
+            // pwd属性的值为与el-input双向绑定的ruleForm.password
+            pwd:ruleForm.password
+          }
+          // 这个位置是成功发送请求，完成登录或注册的位置，尝试获取json-server的数据
+          // 因为调用link函数返回的是一个promise对象，所以需要调用promise对象的then方法来解析获取数据
+          // 注册时调用的该函数参数是apiUrl.register，"POST",data
+          link(apiUrl.register,"POST",data).then((value:any)=>{
+            // 判断，若成功传递数据了，则将data转换为数组时，长度就不是0
+            if (Object.keys(value.data).length !== 0) {
+              // 输入邮箱密码注册成功后，就可以跳到登录部分；
+              ElMessage({
+                showClose: true,
+                message: 'Congrats, this is a success message.',
+                type: 'success',
+              })
+              model.value="login"
+              // 遍历menuData
+              menuData.forEach(menudata=>{
+                // 将其中currentState属性的值全部改为false
+                menudata.currentState=false
+              })
+              // 全部改为false后，将menuData数组里第一个元素的，也就是登录的currentState改为true
+              menuData[0].currentState=true
+            } else {
+              // 若注册失败，则给用户一个失败了的提示
+              ElMessage({
+                showClose: true,
+                message: 'Oops, this is a error message.',
+                type: 'error',
+              })
+            }
+            
+          })
+        }
       } else {
         console.log('error submit!')
         return false

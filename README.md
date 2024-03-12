@@ -48,7 +48,7 @@
             <el-button type="primary" round>Primary</el-button>
           ```
 
-## 二、登录模块
+## 二、登录前准备
 * 2.1 登录注册tab切换
     * 初始化数据，调用reactive函数来声明响应式数据，并赋值变量menuData，声明的数据是一个数组，包含关于注册和登录的两种不同状态的属性，在模板中用v-for遍历该数组并展示，在遍历数组的li标签里，声明一个点击事件，并为其绑定事件函数clickMenu，因为需要确定点击的到底是menuData中的哪一个对象，所以传个实参data，在执行clickMenu函数时，记得接收形参data(此时会报错，报参数data没有明确指定类型，写成data:any即可)。在clickMenu函数中遍历menuData，遍历的回调中，点击任何一个选项后，将所有的currentState变为false，然后紧接着将点击的currentState改为true。最后当点击登录或注册时，应有高亮，因此当currentState等于data.currentState时，周围样式发生改变
         * ```
@@ -466,3 +466,67 @@
                 return Promise.reject(error);
             });
           ```
+
+## 四、 登录模块
+* 4.1 实现登录功能
+    * 首先，给登录/注册按钮添加disabled属性，属性值为变量btnbool，disabled属性用v-bind进行单向绑定。调用ref声明响应式数据btnbool，其默认值设置为true，其值为true时就不允许点击登录/注册按钮进行下一步操作。
+    * 其次，调用watch来监测ruleForm内所有属性，在watch指定的回调内进行判断，若是登录，则再判断，若邮箱-newValue.username和密码-newValue.password输入框都有值，才可以点击登录，将btnbool的值改为false，但凡有一个没有值btnbool的值还是true；若是注册的状态，邮箱、密码、再次输入密码的输入框都要有值，才可以注册，否则btnbool为true。
+    * 最后，在提交的方法中的判断条件为valid判断中，再设置一个判断，判断点击的是登录按钮还是注册按钮，若为登录，则调用link函数，这次的请求方法为GET，且想要获取的就是之前输入到name和pwd两个输入框里的值，若成功获取正确的值，则可以调用ElMessage来提示登录成功，反之，输错密码或邮箱，则提示登录失败。
+        * ```
+            <el-button  :disabled="btnbool" type="primary"  class="login-btn block"  @click="submitForm(ruleFormRef)">
+                {{model==="login" ? '登录' : '注册'}}
+            </el-button>
+            ...
+            // 声明ref创建的响应式数据btnbool，默认值设置为true，为true时就不允许点击登录按钮进行登录操作
+            let btnbool=ref(true)
+            // 监测ruleForm内所有属性
+            watch(ruleForm,(newValue)=>{
+                // 判断到底是登录还是注册，若为登录
+                if (model.value==='login') {
+                // 若邮箱和密码输入框不是空，两个输入框都有值，才可以点击登录按钮，成功登录跳到其他路由，
+                if(newValue.username!==""&&newValue.password!==''){
+                    // 则将btnbool的值改为false，使登录按钮能够被点击并进行登录操作；
+                    btnbool.value=false
+                }else{
+                    // 否则btnbool的值还是true
+                    btnbool.value=true
+                }
+                } else {  // 若为注册，
+                    // 若邮箱和密码、再次输入密码输入框不是空，三个输入框都有值，才可以点击注册按钮，成功跳到登录部分，
+                    if(newValue.username!==""&&newValue.password!==''&&newValue.repassword!==''){
+                        // 则将btnbool的值改为false，使注册按钮能够被点击并进行注册操作；
+                        btnbool.value=false
+                    }else{
+                        // 否则btnbool的值还是true
+                        btnbool.value=true
+                    }
+                }
+            })
+            ...
+            // 在此判断点击的是登录还是注册时的按钮
+            if (model.value==="login") {
+            console.log("login")
+            // 若是登录，向apiUrl中定义的地址中，发送get请求，想要获取的就是输入到两个输入框里的值
+            link(apiUrl.register,"GET",{},{name:ruleForm.username,pwd:ruleForm.password}).then((value:any)=>{
+                // 若从apiUrl定义的地址中获取的数据的data长度不是0，也就是成功获取正确的数据，则登录成功，
+                if (value.data.length!=0) {
+                console.log('succeed to login');
+                ElMessage({
+                    showClose: true,
+                    message: 'Succeed to login.',
+                    type: 'success',
+                })
+                }else{
+                // 反之，因输错密码或邮箱获取的数据长度为0，则登录失败
+                console.log('failed to login');
+                ElMessage({
+                    showClose: true,
+                    message: 'Oops, failed to login.',
+                    type: 'error',
+                })
+                }
+            })
+            }
+          ```
+        * ![成功获取数据，成功登录与输错数据，登录失败](images/成功获取数据并登录与输错数据无法获取数据并登录失败.png)
+* 4.2 自定义hook封装加密

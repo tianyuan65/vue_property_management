@@ -31,7 +31,12 @@
           <el-input v-model="ruleForm.repassword" type="password"/>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="login-btn block" @click="submitForm(ruleFormRef)">
+          <!-- 添加一个属性disabled，为其赋值btnbool的值，并单向数据绑定，btnbool若为true，意为不允许使用该组件 -->
+          <el-button 
+            :disabled="btnbool"
+            type="primary" 
+            class="login-btn block" 
+            @click="submitForm(ruleFormRef)">
             <!-- 这里不能写死为登录，判断model值是否等于login，相等则展示登录，不相等则展示注册 -->
             {{model==="login" ? '登录' : '注册'}}
           </el-button>
@@ -42,7 +47,7 @@
 </template>
 
 <script lang="ts" setup>
-  import {onMounted, reactive,ref} from 'vue'
+  import {onMounted, reactive,ref, watch} from 'vue'
   import type { FormInstance, FormRules  } from 'element-plus'
   import {ElMessage} from 'element-plus'
   // 引入两个工具函数
@@ -128,6 +133,33 @@
     checkPass: '',
     age: '',
   })
+
+  // 声明ref创建的响应式数据btnbool，默认值设置为true，为true时就不允许点击登录按钮进行登录操作
+  let btnbool=ref(true)
+  // 监测ruleForm内所有属性
+  watch(ruleForm,(newValue)=>{
+    // 判断到底是登录还是注册，若为登录
+    if (model.value==='login') {
+      // 若邮箱和密码输入框不是空，两个输入框都有值，才可以点击登录按钮，成功登录跳到其他路由，
+      if(newValue.username!==""&&newValue.password!==''){
+        // 则将btnbool的值改为false，使登录按钮能够被点击并进行登录操作；
+        btnbool.value=false
+      }else{
+        // 否则btnbool的值还是true
+        btnbool.value=true
+      }
+    } else {  // 若为注册，
+      // 若邮箱和密码、再次输入密码输入框不是空，三个输入框都有值，才可以点击注册按钮，成功跳到登录部分，
+      if(newValue.username!==""&&newValue.password!==''&&newValue.repassword!==''){
+        // 则将btnbool的值改为false，使注册按钮能够被点击并进行注册操作；
+        btnbool.value=false
+      }else{
+        // 否则btnbool的值还是true
+        btnbool.value=true
+      }
+    }
+  })
+
   // 在此设置以哪种方式触发表单验证，默认就是失去校验则验证
   const rules = reactive<FormRules<typeof ruleForm>>({
     password: [{ validator: validatePass, trigger: 'blur' }],
@@ -143,6 +175,26 @@
         // 在此判断点击的是登录还是注册时的按钮
         if (model.value==="login") {
           console.log("login")
+          // 若是登录，向apiUrl中定义的地址中，发送get请求，想要获取的就是输入到两个输入框里的值
+          link(apiUrl.register,"GET",{},{name:ruleForm.username,pwd:ruleForm.password}).then((value:any)=>{
+            // 若从apiUrl定义的地址中获取的数据的data长度不是0，也就是成功获取正确的数据，则登录成功，
+            if (value.data.length!=0) {
+              console.log('succeed to login');
+              ElMessage({
+                showClose: true,
+                message: 'Succeed to login.',
+                type: 'success',
+              })
+            }else{
+              // 反之，因输错密码或邮箱获取的数据长度为0，则登录失败
+              console.log('failed to login');
+              ElMessage({
+                showClose: true,
+                message: 'Oops, failed to login.',
+                type: 'error',
+              })
+            }
+          })
         }else{
           console.log("register");
           // 需要作为参数传递的数据，是注册时要用的，是传递到服务器的数据

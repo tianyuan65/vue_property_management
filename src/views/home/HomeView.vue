@@ -1,6 +1,12 @@
 <template>
-  <div>
-    This is HomeView Component
+  <div class="common-layout">
+    <el-container>
+      <el-aside width="200px">Aside</el-aside>
+      <el-container>
+        <el-header>Header</el-header>
+        <el-main>Main</el-main>
+      </el-container>
+    </el-container>
   </div>
 </template>
 
@@ -8,6 +14,18 @@
 
 </script>
 
-<style>
-
+<style lang="scss">
+  .el-aside{
+    background: aqua;
+    height:100%;
+  }
+  .el-header{
+    background: #ccf;
+  }
+  .el-main{
+    background: #bfa;
+  }
+  .el-container,.el-aside,.common-layout,#app,body,html{
+    height:100%;
+  }
 </style>

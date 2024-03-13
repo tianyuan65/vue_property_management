@@ -56,6 +56,10 @@
   import apiUrl from '../../api/url.js'
   // 引入useMd5 hook
   import useMd5 from '../../hooks/useMd5.js'
+  // 引入vue-router
+  import {useRouter} from 'vue-router'
+
+  let router=useRouter()  // 调用useRouter声明router函数
   
   // 初始化数据
   const menuData=reactive([
@@ -187,6 +191,8 @@
                 message: 'Succeed to login.',
                 type: 'success',
               })
+              // 调用router的push方法实现路由跳转
+              router.push("/home")
             }else{
               // 反之，因输错密码或邮箱获取的数据长度为0，则登录失败
               console.log('failed to login');

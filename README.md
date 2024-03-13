@@ -616,4 +616,30 @@
                 }
               ```
             * ![成功对密码进行加密](images/组件中调用useMd5函数，对密码进行加密.png)
-* 4.3 
+* 4.3 useRouter导航
+    * 使用useRouter导航，在登陆成功后，跳转到主页面的操作。vue3配合使用的vue-router4当中不允许使用this来代表Vue实例对象，也就是不允许使用this，要实现路由跳转，需要从vue-router中引入useRouter hook，调用useRouter声明router函数，在登录成功的判断，也就是用户没有输错邮箱和密码并点击登录按钮，成功登录时，自动跳转到首页页面。记得事先在路由配置文件中配置好home的路由
+        * ```
+            router/index.ts
+            // 配置home路由
+            {
+                path: '/home',  
+                name: 'home',
+            
+                component: () => import('../views/home/HomeView.vue')
+            },
+            // 路由重定向，默认跳转至login
+            {
+                path:"/",
+                redirect:"/login"
+            }
+            ...
+            LoginView.vue
+            // 引入vue-router
+            import {useRouter} from 'vue-router'
+            let router=useRouter()  // 调用useRouter声明router函数
+            // 调用router的push方法实现路由跳转
+            router.push("/home")
+          ```
+
+## 五、首页模块
+* 5.1 

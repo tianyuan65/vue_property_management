@@ -54,6 +54,8 @@
   import {checkEmail,checkPassword} from '../../utils/verification'
   import link from '../../api/link.js'
   import apiUrl from '../../api/url.js'
+  // 引入useMd5 hook
+  import useMd5 from '../../hooks/useMd5.js'
   
   // 初始化数据
   const menuData=reactive([
@@ -175,8 +177,8 @@
         // 在此判断点击的是登录还是注册时的按钮
         if (model.value==="login") {
           console.log("login")
-          // 若是登录，向apiUrl中定义的地址中，发送get请求，想要获取的就是输入到两个输入框里的值
-          link(apiUrl.register,"GET",{},{name:ruleForm.username,pwd:ruleForm.password}).then((value:any)=>{
+          // 若是登录，向apiUrl中定义的地址中，发送get请求，想要获取的就是输入到两个输入框里的值，并将需要比对的密码加密
+          link(apiUrl.register,"GET",{},{name:ruleForm.username,pwd:useMd5(ruleForm.password).value}).then((value:any)=>{
             // 若从apiUrl定义的地址中获取的数据的data长度不是0，也就是成功获取正确的数据，则登录成功，
             if (value.data.length!=0) {
               console.log('succeed to login');
@@ -202,7 +204,9 @@
             // name属性的值为与el-input双向绑定的ruleForm.username
             name:ruleForm.username,
             // pwd属性的值为与el-input双向绑定的ruleForm.password
-            pwd:ruleForm.password
+            // pwd:ruleForm.password
+            // 对密码进行加密，调用useMd5函数
+            pwd:useMd5(ruleForm.password).value
           }
           // 这个位置是成功发送请求，完成登录或注册的位置，尝试获取json-server的数据
           // 因为调用link函数返回的是一个promise对象，所以需要调用promise对象的then方法来解析获取数据
@@ -232,7 +236,6 @@
                 type: 'error',
               })
             }
-            
           })
         }
       } else {

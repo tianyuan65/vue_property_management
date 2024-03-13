@@ -530,3 +530,90 @@
           ```
         * ![成功获取数据，成功登录与输错数据，登录失败](images/成功获取数据并登录与输错数据无法获取数据并登录失败.png)
 * 4.2 自定义hook封装加密
+    * 1. 介绍js-md5
+        * 是通过前台js加密的方式对密码等私密信息进行加密的工具。
+        * 好处：
+            * (1). 用js对私密信息加密可避免在网络中传输明文信息,被人截取数据包而造成数据泄露。
+            * (2). 避免缓存中自动缓存密码。使用谷歌浏览器登录时，输入的用户名或密码会自动缓存，在此登录时，无需再次输入密码即可登陆，这样容易泄露密码，使用js加密时,缓存的加密后的密文,用密文做密码登陆是不成功的,即使泄露也是泄露的密文,对密码不会造成威胁，缺点是每次登陆时都要手动输入密码，较麻烦。
+            * (3). 减少服务器加密时的资源消耗。从理论上提高了服务器的性能。
+        * 安装： npm i -D js-md5
+    * 2. 如何加密
+        * 安装js-md5后，在hooks文件夹中创建useMd5 hook，在useMd5中接收一个data形参，函数内将接收到的参数data(也就是密码)，用md5方法进行转换加密，又调用ref函数来声明为响应式数据。回到LoginView组件当中，因为密码需要被加密，在注册的部分，将data的pwd属性值改为useMd5(ruleForm.password).value，同样登录时，需要个数据库进行比对的pwd属性也需要改为useMd5(ruleForm.password).value，此时到mock/data.json中可以查看到，与之前注册时不同，pwd被加密了。
+            * ```
+                /hooks/useMd5.js
+                import md5 from 'js-md5'
+                import {ref} from 'vue'
+
+                export default function useMd5 (data){
+                    // 将接收到的参数data(也就是密码)，用md5方法进行转换加密，又调用ref函数来声明为响应式数据
+                    let md5Data=ref(md5(data))
+
+                    return{md5Data}
+                }
+                ...
+                LoginView.js
+                // 在此判断点击的是登录还是注册时的按钮
+                if (model.value==="login") {
+                // 若是登录，向apiUrl中定义的地址中，发送get请求，想要获取的就是输入到两个输入框里的值，并将需要比对的密码加密
+                link(apiUrl.register,"GET",{},{name:ruleForm.username,pwd:useMd5(ruleForm.password).value}).then((value:any)=>{
+                    // 若从apiUrl定义的地址中获取的数据的data长度不是0，也就是成功获取正确的数据，则登录成功，
+                    if (value.data.length!=0) {
+                    console.log('succeed to login');
+                    ElMessage({
+                        showClose: true,
+                        message: 'Succeed to login.',
+                        type: 'success',
+                    })
+                    }else{
+                    // 反之，因输错密码或邮箱获取的数据长度为0，则登录失败
+                    console.log('failed to login');
+                    ElMessage({
+                        showClose: true,
+                        message: 'Oops, failed to login.',
+                        type: 'error',
+                    })
+                    }
+                })
+                }else{
+                    // 需要作为参数传递的数据，是注册时要用的，是传递到服务器的数据
+                    let data={
+                        // name属性的值为与el-input双向绑定的ruleForm.username
+                        name:ruleForm.username,
+                        // pwd属性的值为与el-input双向绑定的ruleForm.password
+                        // pwd:ruleForm.password
+                        // 对密码进行加密，调用useMd5函数
+                        pwd:useMd5(ruleForm.password).value
+                    }
+                    // 这个位置是成功发送请求，完成登录或注册的位置，尝试获取json-server的数据
+                    // 因为调用link函数返回的是一个promise对象，所以需要调用promise对象的then方法来解析获取数据
+                    // 注册时调用的该函数参数是apiUrl.register，"POST",data
+                    link(apiUrl.register,"POST",data).then((value:any)=>{
+                        // 判断，若成功传递数据了，则将data转换为数组时，长度就不是0
+                        if (Object.keys(value.data).length !== 0) {
+                            // 输入邮箱密码注册成功后，就可以跳到登录部分；
+                            ElMessage({
+                                showClose: true,
+                                message: 'Congrats, this is a success message.',
+                                type: 'success',
+                            })
+                            model.value="login"
+                            // 遍历menuData
+                            menuData.forEach(menudata=>{
+                                // 将其中currentState属性的值全部改为false
+                                menudata.currentState=false
+                            })
+                            // 全部改为false后，将menuData数组里第一个元素的，也就是登录的currentState改为true
+                            menuData[0].currentState=true
+                        } else {
+                            // 若注册失败，则给用户一个失败了的提示
+                            ElMessage({
+                                showClose: true,
+                                message: 'Oops, this is a error message.',
+                                type: 'error',
+                            })
+                        }
+                    })
+                }
+              ```
+            * ![成功对密码进行加密](images/组件中调用useMd5函数，对密码进行加密.png)
+* 4.3 

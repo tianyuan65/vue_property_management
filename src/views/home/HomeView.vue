@@ -1,7 +1,7 @@
 <template>
   <div class="common-layout">
     <el-container>
-      <el-aside width="200px">Aside</el-aside>
+      <el-aside><LeftMenu/></el-aside>
       <el-container>
         <el-header>Header</el-header>
         <el-main>Main</el-main>
@@ -11,7 +11,7 @@
 </template>
 
 <script setup>
-
+  import LeftMenu from '../../components/LeftMenu.vue'
 </script>
 
 <style lang="scss">

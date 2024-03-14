@@ -646,3 +646,23 @@
     * 通过组件库快速构建响应式页面，大大减少对于页面布局的复杂度。在element-plus组件库当中找到Container布局容器，在其中可以找到需要的布局代码，拷贝到HomeView组件中后，根据每个小组件(el-aside,el-header,el-main)的样式名，让小组件们在页面中撑开
 * 5.2 elementPlus-Menu导航——左侧导航栏
     * 从elementPlus的Menu导航中，引入垂直，可内嵌的子组件到左侧导航栏。
+* 5.3 导航折叠菜单——右侧头部导航栏
+    * 设置一个可以点击的图标，通过点击右侧的图标，让左侧的导航部分可以展开和折叠，从element-plus引入CaretRight和CaretLeft图标，用el-icon标签包裹并展示。随后调用ref，传入布尔值true，声明showWhich，v-if条件渲染指令添加在CaretRight组件标签，默认展示向右，v-else指令添加到CaretLeft组件标签。给el-icon标签绑定点击事件，与点击事件绑定showMenu事件函数，当点击图标时，触发事件函数，函数内将showWhich值取反，页面当中就是展示与之相反的图标。
+        * ```
+            <el-icon @click="showMenu">
+                <!-- 默认展示呈现菜单 -->
+                <CaretRight v-if="showWhich"/>
+                <CaretLeft v-else/>
+            </el-icon>
+            import {CaretRight,CaretLeft} from '@element-plus/icons-vue'
+            import {ref} from 'vue'
+
+            // 声明isShow，用于展示向右还是向左的图标
+            let showWhich=ref(true)
+
+            const showMenu=()=>{
+                // showMenu函数被触发时，值取反
+                showWhich.value=!showWhich.value
+                console.log('click to show menu on left');
+            }
+          ```

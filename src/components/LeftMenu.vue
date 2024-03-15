@@ -1,10 +1,12 @@
 <template>
+    <!-- 添加collapse属性，使其值等于$store.state.HomeModule.navBool，并用v-bind绑定，即可实现左侧导航栏的伸缩 -->
     <el-menu
     active-text-color="#ffd04b"
     background-color="#545c64"
     class="el-menu-vertical-demo"
     default-active="2"
     text-color="#fff"
+    :collapse="!$store.state.HomeModule.navBool"
     @open="handleOpen"
     @close="handleClose"
     >

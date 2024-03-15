@@ -1,7 +1,7 @@
 <template>
   <div class="common-layout">
     <el-container>
-      <el-aside><LeftMenu/></el-aside>
+      <el-aside width="auto"><LeftMenu/></el-aside>
       <el-container>
         <el-header><RightTop/></el-header>
         <el-main>Main</el-main>

@@ -666,3 +666,37 @@
                 console.log('click to show menu on left');
             }
           ```
+* 5.4 vuex-useStore
+    * 点击右侧头部导航栏的图标实现，左侧导航栏的伸缩，需要配合vuex实现。首先，store文件夹下创建modules文件夹，在其中创建HomeModule.ts，HomeModule中声明名为HomeModule的对象，对象内部配置state、mutations、actions、getter对象，state是控制组件状态，也就是存放数据的地方，其中声明navBool变量，其默认值为true，是为了在RightTop组件中使用的；RightTop组件中引入并调用useStore，并赋值给变量store，在showMenu事件函数当中调用store函数的commit方法，传入SET_NAV_BOOL函数作为参数，来触发mutations更新state状态，在HomeModule的mutations中调用SET_NAV_BOOL函数，传递state作为形参，这个state就是上面的state，在SET_NAV_BOOL函数中将state.navBool值取反，这样就可以在点击图标时实现伸缩操作。值得注意的是，从组件库拷贝过来的HomeView组件的```<el-aside width="auto"><LeftMenu/></el-aside>```中width默认是200px，在此修改为auto，这样可以在伸缩左侧导航栏时，不会留白。默认暴露HomeModule后，在/store.index.ts中引入并配置到modules对象中。在LeftMenu组件的el-menu标签中添加collapse属性，其值为!$store.state.HomeModule.navBool，并用v-bind单向绑定collapse属性，使其能根据$store.state.HomeModule.navBool值的变化实现左侧导航栏的伸缩。
+        * ```
+            RightTop
+            import {useStore} from 'vuex'
+            let store=useStore()  // 调用useStore函数，声明store对象
+            const showMenu=()=>{
+                // 调用store的commit方法，来触发mutations更新/修改state状态
+                store.commit("SET_NAV_BOOL")
+                console.log('click to show menu on left');
+            }
+            ...
+            HomeModule.ts
+            // 声明一个名为HomeModule的对象
+            const HomeModule={
+                state:{  // 控制组件状态，就是存放数据的地方
+                    // 使navBool值默认为true，为了在RightTop中使用
+                    navBool:true
+                },
+                mutations:{
+                    // 在mutations中调用在组件中触发的SET_NAV_BOOL函数，传递state作为形参，也就是上面的那个state
+                    SET_NAV_BOOL(state:any){
+                        // 值取反
+                        state.navBool=!state.navBool
+                    }
+                },
+                actions:{},
+                getter:{}
+            }
+            export default HomeModule
+            ...
+            HomeView
+            <el-aside width="auto"><LeftMenu/></el-aside>
+          ```

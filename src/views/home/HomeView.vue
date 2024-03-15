@@ -4,7 +4,10 @@
       <el-aside width="auto"><LeftMenu/></el-aside>
       <el-container>
         <el-header><RightTop/></el-header>
-        <el-main>Main</el-main>
+        <el-main>
+          <!-- home下嵌套路由的出口 -->
+          <router-view></router-view>
+        </el-main>
       </el-container>
     </el-container>
   </div>

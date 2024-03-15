@@ -700,3 +700,44 @@
             HomeView
             <el-aside width="auto"><LeftMenu/></el-aside>
           ```
+* 5.5 首页多级路由设置
+    * home下创建children文件夹，children文件夹中创建EchartsView、OwnerList、OwnersInfo、PayList、UpdateOwner组件，在路由配置文件中，home下配置子路由，home的子路由有echarts、pay、owner，owner路由下有ownerlist和updateowner路由。
+        * ```
+            // 配置home路由
+            {
+                path: '/home',  
+                name: 'home',
+            
+                component: () => import('../views/home/HomeView.vue'),
+                // 配置home路由下的子路由们
+                children:[
+                {
+                    path:'echarts',
+                    name:'echarts',
+                    component:()=>import('../views/home/children/EchartsView.vue')
+                },
+                {
+                    path:'pay',
+                    name:'pay',
+                    component:()=>import('../views/home/children/PayList.vue')
+                },
+                {
+                    path:'owner',
+                    name:'owner',
+                    component:()=>import('../views/home/children/OwnersInfo.vue'),
+                    children:[
+                    {
+                        path:'ownerlist',
+                        name:'ownerlist',
+                        component:()=>import('../views/home/children/OwnerList.vue')
+                    },
+                    {
+                        path:'updateowner',
+                        name:'updateowner',
+                        component:()=>import('../views/home/children/UpdateOwners.vue')
+                    }
+                    ]
+                },
+                ]
+            },
+          ```

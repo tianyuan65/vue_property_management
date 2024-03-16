@@ -742,4 +742,102 @@
             },
           ```
 * 5.6 动态实时路由获取
-    * 根据当前路由规则生成相应的路由导航，
+    * 根据当前路由规则生成相应的路由导航，需要修改左侧导航栏的文本。
+        * 1. 文本：在home路由下，配置二级路由，路由们的名为echarts、pay和owner，owner下配置的三级路由名为ownerlist和updateowner，为每一个路由配置meta路由元信息配置项。回到LeftMenu组件，整个部分先用template标签包起来，引入调用useRouter方法赋值给router变量，输出router对象可查看到router下options对象中的routes里可看到所有路由，在其中需要的是home路由的子路由们，在template标签中用v-for指令遍历router.options.routes[1].children数组后，将左侧导航栏分为两个小部分-可下拉导航和不可下拉导航，可下拉和不可下拉的导航部分展示的文本，需要改为```{{child.meta.title}}```，el-sub-menu标签和el-menu-item标签各自的index属性需要改为child.path，表示选项不能默认高亮，需要点击哪个导航项才高亮。el-sub-menu包裹的el-menu-item-group是展示可下拉导航的子路由的部分，在el-menu-item-group中依旧用v-for指令遍历上面遍历过得child，声明遍历结果为child2，同样把el-menu-item标签，也就是el-menu-item-group标签的子标签的index属性改为child2.path，导航项文本改为```{{child2.meta.title}}```。
+        * 2. 图标：给路由规则文件中的home下的三个同级子路由echarts、pay和owner路由的meta添加icon属性，其属性值为从组件库当中引入的图标组件TrendCharts、Grid和List组件，这三个记得在最上面提前引入，回到LeftMenu组件当中，需要让el-icon标签包裹component标签，将component标签的is属性的属性值改为child.meta.icon，从而实现通过给component标签的is属性传递图标组件实现动态组件
+        * ```
+            /router/index.ts
+            // 配置home路由
+            {
+                path: '/home',  
+                name: 'home',
+            
+                component: () => import('../views/home/HomeView.vue'),
+                // 配置home路由下子路由们
+                children:[
+                    {
+                        path:'echarts',
+                        name:'echarts',
+                        component:()=>import('../views/home/children/EchartsView.vue'),
+                        // 路由元信息配置项
+                        meta:{
+                            title:'数据展示',
+                            // 在路由元信息配置项中，配置icon属性，其值为与当前路由对应的图标组件，但因为需要实现动态组件的效果，在这里写成组件方式
+                            icon:TrendCharts
+                        }
+                    },
+                    {
+                        path:'pay',
+                        name:'pay',
+                        component:()=>import('../views/home/children/PayList.vue'),
+                        meta:{
+                            title:'缴费管理',
+                            // 在路由元信息配置项中，配置icon属性，其值为与当前路由对应的图标组件，但因为需要实现动态组件的效果，在这里写成组件方式
+                            icon:Grid
+                        }
+                    },
+                    {
+                        path:'owner',
+                        name:'owner',
+                        component:()=>import('../views/home/children/OwnersInfo.vue'),
+                        meta:{
+                            title:'住户信息',
+                            // 在路由元信息配置项中，配置icon属性，其值为与当前路由对应的图标组件，但因为需要实现动态组件的效果，在这里写成组件方式
+                            icon:List
+                        },
+                        children:[
+                            {
+                                path:'ownerlist',
+                                name:'ownerlist',
+                                component:()=>import('../views/home/children/OwnerList.vue'),
+                                meta:{classifyTitle:'住户信息',title:'住户列表'}
+                            },
+                            {
+                                path:'updateowner',
+                                name:'updateowner',
+                                component:()=>import('../views/home/children/UpdateOwners.vue'),
+                                meta:{classifyTitle:'住户信息',title:'修改住户信息'}
+                            }
+                        ]
+                    },
+                ]
+            }
+            ...
+            LeftView
+            <!-- template标签包裹带下拉和不带下拉的导航，用v-for遍历router.options.routes的第二个的children数组 -->
+            <template v-for="child in router.options.routes[1].children" :key="child.path">
+                <!-- 带下拉的导航，判断是否有子路由，若存在，就在带下拉的导航展示； -->
+                <!-- index属性的值改为遍历的属性的值，因为不能是默认高亮，点击哪个选项，哪个选项就高亮，记得用v-bind绑定 -->
+                <el-sub-menu :index="child.path" v-if="child.children">
+                    <template #title>
+                        <el-icon>
+                            <!-- 通过给component标签的is属性传递图标组件来实现动态组件 -->
+                            <component :is="child.meta.icon"></component>
+                        </el-icon>
+                        <span>{{child.meta.title}}</span>
+                    </template>
+                    <!-- 遍历owner路由的children数组 -->
+                    <el-menu-item-group v-for="child2 in child.children" :key="child2.path">
+                        <!-- 给这里的index属性值也改成遍历child2后的path值，意为点击哪个选项，哪个选项就高亮，记得用v-bind绑定 -->
+                        <el-menu-item :index="child2.path">{{child2.meta.title}}</el-menu-item>
+                        <!-- <el-menu-item index="1-2">item two</el-menu-item> -->
+                    </el-menu-item-group>
+                </el-sub-menu>
+                <!-- 不带下拉的导航，判断子路由是否存在，若不存在，就在不带下拉的导航展示 -->
+                <el-menu-item :index="child.path" v-else>
+                    <el-icon>
+                        <!-- 通过给component标签的is属性传递图标组件来实现动态组件 -->
+                        <component :is="child.meta.icon"></component>
+                    </el-icon>
+                    <!-- 展示不带下拉的路由的title -->
+                    <span>{{child.meta.title}}</span>
+                </el-menu-item>
+            </template>...
+            import {useRouter} from 'vue-router'
+            import {TrendCharts,Grid,List} from '@element-plus/icons-vue'
+            let router=useRouter()
+            onMounted(() => {
+                console.log(router);
+                console.log("get route rules",router.options.routes[1].children);
+            })
+          ```

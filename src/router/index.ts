@@ -23,7 +23,7 @@ const routes: Array<RouteRecordRaw> = [
     // 配置home路由下子路由们
     children:[
       {
-        path:'echarts',
+        path:'/echarts',
         name:'echarts',
         component:()=>import('../views/home/children/EchartsView.vue'),
         // 路由元信息配置项
@@ -34,7 +34,7 @@ const routes: Array<RouteRecordRaw> = [
         }
       },
       {
-        path:'pay',
+        path:'/pay',
         name:'pay',
         component:()=>import('../views/home/children/PayList.vue'),
         meta:{
@@ -44,7 +44,7 @@ const routes: Array<RouteRecordRaw> = [
         }
       },
       {
-        path:'owner',
+        path:'/owner',
         name:'owner',
         component:()=>import('../views/home/children/OwnersInfo.vue'),
         meta:{
@@ -54,13 +54,13 @@ const routes: Array<RouteRecordRaw> = [
         },
         children:[
           {
-            path:'ownerlist',
+            path:'/ownerlist',
             name:'ownerlist',
             component:()=>import('../views/home/children/OwnerList.vue'),
             meta:{classifyTitle:'住户信息',title:'住户列表'}
           },
           {
-            path:'updateowner',
+            path:'/updateowner',
             name:'updateowner',
             component:()=>import('../views/home/children/UpdateOwners.vue'),
             meta:{classifyTitle:'住户信息',title:'修改住户信息'}

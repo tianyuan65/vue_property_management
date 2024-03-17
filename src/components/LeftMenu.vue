@@ -1,5 +1,5 @@
 <template>
-    <!-- 添加collapse属性，使其值等于$store.state.HomeModule.navBool，并用v-bind绑定，即可实现左侧导航栏的伸缩 -->
+    <!-- 添加collapse属性，使其值等于$store.state.HomeModule.navBool，并用v-bind绑定，即可实现左侧导航栏的伸缩；通过设置router属性，使组件根据下面index属性的值来完成对应的页面跳转 -->
     <el-menu
     active-text-color="#ffd04b"
     background-color="#545c64"
@@ -9,6 +9,7 @@
     :collapse="!$store.state.HomeModule.navBool"
     @open="handleOpen"
     @close="handleClose"
+    router
     >
         <!-- template标签包裹带下拉和不带下拉的导航，用v-for遍历router.options.routes的第二个的children数组 -->
         <template v-for="child in router.options.routes[1].children" :key="child.path">
@@ -60,8 +61,9 @@
     }
 
     onMounted(() => {
-        console.log(router);
+        console.log(router.options.routes[1]);
         console.log("get route rules",router.options.routes[1].children);
+        console.log('child2',router.options.routes[1].children[2].children);
     })
 </script>
 

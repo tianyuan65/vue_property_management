@@ -20,11 +20,11 @@
 
 <style lang="scss">
   .el-aside{
-    background: aqua;
+    background: #545c64;
     height:100%;
   }
   .el-header{
-    background: #ccf;
+    // background: #ccf;
   }
   .el-main{
     background: #bfa;

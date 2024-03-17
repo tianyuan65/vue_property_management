@@ -1,5 +1,7 @@
 <template>
-  <div>Owners Information</div>
+  <div>
+    <router-view></router-view>
+  </div>
 </template>
 
 <script>

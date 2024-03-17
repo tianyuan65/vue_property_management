@@ -712,27 +712,27 @@
                 // 配置home路由下的子路由们
                 children:[
                 {
-                    path:'echarts',
+                    path:'/echarts',
                     name:'echarts',
                     component:()=>import('../views/home/children/EchartsView.vue')
                 },
                 {
-                    path:'pay',
+                    path:'/pay',
                     name:'pay',
                     component:()=>import('../views/home/children/PayList.vue')
                 },
                 {
-                    path:'owner',
+                    path:'/owner',
                     name:'owner',
                     component:()=>import('../views/home/children/OwnersInfo.vue'),
                     children:[
                         {
-                            path:'ownerlist',
+                            path:'/ownerlist',
                             name:'ownerlist',
                             component:()=>import('../views/home/children/OwnerList.vue')
                         },
                         {
-                            path:'updateowner',
+                            path:'/updateowner',
                             name:'updateowner',
                             component:()=>import('../views/home/children/UpdateOwners.vue')
                         }
@@ -756,7 +756,7 @@
                 // 配置home路由下子路由们
                 children:[
                     {
-                        path:'echarts',
+                        path:'/echarts',
                         name:'echarts',
                         component:()=>import('../views/home/children/EchartsView.vue'),
                         // 路由元信息配置项
@@ -767,7 +767,7 @@
                         }
                     },
                     {
-                        path:'pay',
+                        path:'/pay',
                         name:'pay',
                         component:()=>import('../views/home/children/PayList.vue'),
                         meta:{
@@ -777,7 +777,7 @@
                         }
                     },
                     {
-                        path:'owner',
+                        path:'/owner',
                         name:'owner',
                         component:()=>import('../views/home/children/OwnersInfo.vue'),
                         meta:{
@@ -787,13 +787,13 @@
                         },
                         children:[
                             {
-                                path:'ownerlist',
+                                path:'/ownerlist',
                                 name:'ownerlist',
                                 component:()=>import('../views/home/children/OwnerList.vue'),
                                 meta:{classifyTitle:'住户信息',title:'住户列表'}
                             },
                             {
-                                path:'updateowner',
+                                path:'/updateowner',
                                 name:'updateowner',
                                 component:()=>import('../views/home/children/UpdateOwners.vue'),
                                 meta:{classifyTitle:'住户信息',title:'修改住户信息'}
@@ -841,3 +841,71 @@
                 console.log("get route rules",router.options.routes[1].children);
             })
           ```
+* 5.7 住户信息列表
+    * 1. 修改页面展示内容
+        * 引入el-table，修改组件库中拷贝过来的el-table-column标签label属性的值。还需要调用slice()，展示截取根据当前分页的住户数，当前所在页数减1，乘一页显示条数(从0开始截取)，截取到当前页数乘以每页显示条数。
+        * ```
+            <el-table :data="tableData.listData.slice((currentPage4-1)*pageSize4,currentPage4*pageSize4)" style="width: 100%">
+                <el-table-column prop="id" label="编号" />
+                <el-table-column prop="title" label="楼盘名称" />
+                <el-table-column prop="type" label="房源类型" />
+                <el-table-column prop="num" label="门牌号" />
+                <el-table-column prop="hometype" label="房源户型" />
+                <el-table-column prop="name" label="户主" />
+            </el-table>
+            ...
+            // 声明默认当前所在页数为第一页
+            const currentPage4 = ref(1)
+            // 声明默认一页信息显示条数为15条
+            const pageSize4 = ref(15)
+          ```
+    * 2. 分页
+        * 组件库中引入el-pagination，删除分页组件中不必要的属性，例如small、background、page-sizes等，在改变每页信息显示条数-handleSizeChange和改变当前所在页数-handleCurrentChange的事件函数中，修改当前页数展示的信息数和当前所在页数。
+            * ```
+                <!-- 分页 -->
+                <el-pagination
+                    v-model:current-page="currentPage4"
+                    v-model:page-size="pageSize4"
+
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="tableData.listData.length"
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                />
+                ...
+                // 声明默认当前所在页数为第一页
+                const currentPage4 = ref(1)
+                // 声明默认一页信息显示条数为15条
+                const pageSize4 = ref(15)
+
+                // 改变每页信息显示条数
+                const handleSizeChange = (val) => {
+                    pageSize4.value=val
+                    console.log(`${val} items per page`)
+                }
+                // 触发改变当前所在页数
+                const handleCurrentChange = (val) => {
+                    currentPage4.value=val
+                    console.log(`current page: ${val}`)
+                }
+              ```
+    * 3. 数据
+        * 在data.json中添加新属性userlist，userlist的值为一个数组，在每一条数据对象中声明id、title、type、num、hometype、name，填入n条数据后，到api下url.js文件中，给apiUrl添加userlist路径，```userlist:"http://localhost:8888/userlist"```，回到Ownerlist组件，引入onMounted钩子函数、link和apiUrl，在onMounted指定的回调中调用link函数，获取数据。引入调用reactive，声明一个对象类型的响应式数据tableData，对象类型里设置名为listData的空数组。在onMounted中调用link函数的成功的回调中，将获取的数据value.data赋值给tableData.listData，最后将分页和表格里用到tableData的地方改为tableData.listData。
+            * ```
+                import { onMounted, ref , reactive } from 'vue'
+                import link from '../../../api/link'
+                import apiUrl from '../../../api/url.js'
+                // 声明tableData变量
+                const tableData=reactive({
+                    listData:[]
+                })
+
+                onMounted(()=>{
+                    // 挂载即调用link函数项userlist路径发送get请求获取数据
+                    link(apiUrl.userlist).then(value=>{
+                        console.log(value);
+                        // 将获取的数据value.data赋值给tableData.listData
+                        tableData.listData=value.data
+                    })
+                })
+              ```

@@ -909,3 +909,25 @@
                     })
                 })
               ```
+* 5.8 住户信息列表查询
+    * 在el-table下再添加一个el-table-column标签，包裹template标签，是通过槽口，将其添加到header中，template标签又包裹el-input，在el-input输入框调整大小，通过v-model指令与用ref声明的响应式数据search双向绑定，用v-on绑定blur事件，使输入框失去焦点时，触发与blur绑定的searchLink事件函数，实现搜寻与输入的内容相关的信息。往下声明searchLink事件函数，事件函数内调用link函数，向userlist路径发送get请求，获取数据，获取名为name的数据，name的职位search的值，成功获取后，将展示到页面中的数据替换为输入框中输入后获取到的值。
+        * ```
+            <el-table-column>
+                <!-- 通过槽口，将其添加到header中 -->
+                <template #header>
+                    <!-- 引入el-input，调整大小，并通过v-model指令与search响应式数据双向绑定，用v-on指令绑定blur事件，输入框失去焦点时失去焦点时触发searchLink事件函数，搜寻与输入的内容相关的信息 -->
+                    <el-input size="small" placeholder="请输入查询内容" v-model="search" @blur="searchLink"/>
+                </template>
+            </el-table-column>
+            ...
+            let search=ref("")
+            // 输入框失去焦点，即触发searchLink事件函数
+            const searchLink=()=>{
+                // 在事件函数内，调用link函数向userlist路径发送get请求获取数据，请求的数据用name来获取，而name的值为search的值
+                link(apiUrl.userlist,"GET",{},{name:search.value}).then(value=>{
+                    console.log(value);
+                    // 获取到输入框相关的数据后，将展示到页面中的值替换为获取到的值
+                    tableData.listData=value.data
+                })
+            }
+          ```

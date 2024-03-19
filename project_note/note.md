@@ -931,3 +931,80 @@
                 })
             }
           ```
+* 5.9 更新住户信息
+    * 1. 点击修改按钮，弹出一个弹出框组件，弹出框组件中有可修改的住户的信息，修改后点击确定按钮，向userlist发送PUT请求，修改服务器中的住户信息，并重新加载页面，将更新后的数据状态呈现到页面上。
+        * ```
+            UpdateOwners.vue
+            // 修改该住户信息
+            const handleEdit = (index, row) => {
+                // 调用commit方法，触发handleEdit时，在mutations中调用SETDIALOG函数
+                store.commit("SETDIALOG")
+                // 调用commit方法，触发handleEdit时，在mutations中调用SETOWNER函数，并传递修改的数据row
+                store.commit("SETOWNER",row)
+                console.log(index, row)
+            }
+            HomeModule.ts
+            mutations:{
+                // 在mutations中调用在UpdateOwners组件当中handleEdit事件函数被触发时调用的SETOWNER函数
+                SETOWNER(state:any,payload:any){
+                    // 将组件中修改的数据row，在这里作为参数payload接收，并修改的数据赋值给state.updateListData
+                    state.updateListData=payload
+                },
+                // 更新列表中数据
+                UPDATEOWNERLIST(state:any,payload:any){
+                    // 将获取的数据value.data赋值给state.listData，来更新/修改userlist里的数据
+                    state.listData=payload.data
+                },
+            },
+            actions:{
+                // UpdateOwners组件的onMounted中调用dispatch方法触发的该函数
+                UpdateOwnersList(context:any){
+                    //调用link函数
+                    link(apiUrl.userlist).then((value:any)=>{
+                        // 调用commit方法触发mutations中的UPDATEOWNERLIST
+                        context.commit('UPDATEOWNERLIST',value)
+                        console.log(value);
+                    })
+                },
+            }
+            UpdateDialog.vue
+            // 点击确定，触发修改户主的信息，并关闭弹出框
+            const confirmMsg=()=>{
+                // 输出输入框里修改的内容
+                console.log('name:',form.name,'title:',form.title);
+                // 需要修改的内容
+                console.log(store.state.HomeModule.updateListData);
+                let data={
+                    id:form.id,
+                    title:form.title,
+                    type:form.type,
+                    num:form.num,
+                    hometype:form.hometype,
+                    name:form.name,
+                }
+                // 调用link函数，向userlist路径发送PUT请求修改户主和楼盘名称
+                link(apiUrl.userlist+'/'+store.state.HomeModule.updateListData.id,"PUT",data).then(value=>{
+                    console.log(value);
+                    
+                })
+                // 点击确定刷新页面的同时，更新页面中的数据
+                window.location.reload()
+                // 最后关闭输入框
+                closeDialog()
+            }
+          ```
+    * 2. 点击删除按钮，向userlist发送DELETE请求，并重新加载页面，将最新状态呈现到页面上。
+        * ```
+            UpdateDialog.vue
+            // 点击取消，触发关闭弹出框函数
+            const closeDialog=()=>{
+                // 复用，在UpdateOwner组件当中的handleEdit函数中用于展示弹出框，这里用于关闭
+                store.commit("SETDIALOG")
+            }
+            HomeModule.ts
+            // 更新弹出框的状态--弹出 or 关闭
+            SETDIALOG(state:any){
+                // 将state中的dialogFormVisible的值取反，用于UpdateDialog组件的展示与隐藏
+                state.dialogFormVisible=!state.dialogFormVisible
+            },
+          ```

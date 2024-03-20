@@ -841,7 +841,9 @@
                 console.log("get route rules",router.options.routes[1].children);
             })
           ```
-* 5.7 住户信息列表
+
+## 六、首页--住户信息模块
+* 6.1 住户信息列表
     * 1. 修改页面展示内容
         * 引入el-table，修改组件库中拷贝过来的el-table-column标签label属性的值。还需要调用slice()，展示截取根据当前分页的住户数，当前所在页数减1，乘一页显示条数(从0开始截取)，截取到当前页数乘以每页显示条数。
         * ```
@@ -909,7 +911,7 @@
                     })
                 })
               ```
-* 5.8 住户信息列表查询
+* 6.2 住户信息列表查询
     * 在el-table下再添加一个el-table-column标签，包裹template标签，是通过槽口，将其添加到header中，template标签又包裹el-input，在el-input输入框调整大小，通过v-model指令与用ref声明的响应式数据search双向绑定，用v-on绑定blur事件，使输入框失去焦点时，触发与blur绑定的searchLink事件函数，实现搜寻与输入的内容相关的信息。往下声明searchLink事件函数，事件函数内调用link函数，向userlist路径发送get请求，获取数据，获取名为name的数据，name的职位search的值，成功获取后，将展示到页面中的数据替换为输入框中输入后获取到的值。
         * ```
             <el-table-column>
@@ -931,7 +933,7 @@
                 })
             }
           ```
-* 5.9 更新住户信息
+* 6.3 更新住户信息
     * 1. 点击修改按钮，弹出一个弹出框组件，弹出框组件中有可修改的住户的信息，修改后点击确定按钮，向userlist发送PUT请求，修改服务器中的住户信息，并重新加载页面，将更新后的数据状态呈现到页面上。
         * ```
             UpdateOwners.vue
@@ -1007,4 +1009,82 @@
                 // 将state中的dialogFormVisible的值取反，用于UpdateDialog组件的展示与隐藏
                 state.dialogFormVisible=!state.dialogFormVisible
             },
+          ```
+
+## 七、首页--数据展示模块
+* 7.1 创建响应式的项目分辨率
+    * 让图表在任何一种分辨率下都可以正常展示。首先下载flexible插件，```npm i --save lib-flexible```，安装成功后，找到flexible.js文件，将其中的refreshRem函数中的设计稿的最小像素改为400px，添加最大像素为2560px，并将其分为24等分，便于计算。可以在任何一个组件(如App组件试一下)的在样式标签中，设置字体大小时，会在后面计算出字体是几rem，做好这些准备工作。
+* 7.2 封装数据展示组件
+    * 做好分辨率的准备工作后，在EchartsView组件，创建容纳左右两部分，每个部分有上下两个图表的容器，随后，创建名为ItemPage的组件，在其中声明具名插槽main和对应的样式，创建并插入图表前可以查看到，每一个图表位就是一个ItemPage，在ItemPage里添加左上、左下、右上、右下图表。在EchartsView中引入ItemPage，在左右两个部分配置好各自的ItemPage组件标签后，ItemPage组件标签中包裹template标签，template标签内包裹对应的左上、左下、右上、右下图表组件即可。
+        * ```
+            EchartsView.vue
+            <!-- 容纳分为左右两部分，每个部分两个图表的容器 -->
+            <div class="container">
+                <!-- 左部分 -->
+                <div class="itemleft">
+                    <!-- 左上 -->
+                    <ItemPage>
+                        <!-- 向槽口中插入组件 -->
+                        <template #main>
+                            <LeftTopChart/>
+                        </template>
+                    </ItemPage>
+                    <!-- 左下 -->
+                    <ItemPage>
+                        <template #main>
+                            <LeftBottomChart/>
+                        </template>
+                    </ItemPage>
+                </div>
+                <!-- 右部分 -->
+                <div class="itemright">
+                    <!-- 右上 -->
+                    <ItemPage>
+                        <template #main>
+                            <RightTopChart/>
+                        </template>
+                    </ItemPage>
+                    <!-- 右下 -->
+                    <ItemPage>
+                        <template #main>
+                            <RightBottomChart/>
+                        </template>
+                    </ItemPage>
+                </div>
+            </div>
+            <script setup>
+                import ItemPage from "@/components/ItemPage.vue";
+                import LeftTopChart from "@/components/LeftTopChart.vue";
+                import LeftBottomChart from "@/components/LeftBottomChart.vue";
+                import RightTopChart from "@/components/RightTopChart.vue";
+                import RightBottomChart from "@/components/RightBottomChart.vue";
+            </script>
+            <style lang="scss">
+            .container{
+                // 撑开
+                width:100%;
+                // 居中
+                margin:0 auto;
+                background: gold;
+                // 设置flex布局
+                display: flex;
+                .itemleft,.itemright{
+                // 让itemleft和itemright个分一半空间
+                flex: 1;
+                }
+            }
+            </style>
+            ItemPage.vue
+            <div class="item">
+                <!-- 具名插槽 -->
+                <slot name="main"></slot>
+            </div>
+            <style lang="scss">
+                .item{
+                    height:5.125rem;
+                    border: 1px solid rgb(166, 164, 164);
+                    margin: .25rem;
+                    background: violet;
+                }
+            </style>
           ```

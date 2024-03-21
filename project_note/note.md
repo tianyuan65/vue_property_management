@@ -1090,4 +1090,5 @@
           ```
 * 7.3 人数统计图表--LeftTopChart
     * 在左上展示住户人数统计，首先就需要安装echarts，```npm i --save echarts```，echarts图表插件是要用在四个组件上，所以，在App根组件上全局引入echarts，并引入provide方法，用于App与四个图表组件间通信，在LeftTopChart引入inject方法，接收来自祖先组件的数据。随后的逻辑便是，当DOM加载完毕之后，也就是组件成功挂载之后，再呈现柱状图，引入onMounted钩子，在其指定的回调中，调用echarts的init方法来初始化，并获取设置在模板中的节点chartLeftTop，将其赋值给变量LeftTopchart。想要绘制图表，就需要获取数据，引入link函数和apiUrl下的chartDataLeftTop路径，调用link函数，从apiUrl下的chartDataLeftTop中获取数据。在其成功的回调中，从获取的数据value解构赋值出data，将data进行遍历，data里的title和num就作为图表的x轴和y轴的数据。做好前期准备工作，也就是将获取的数据处理好之后，调用LeftTopchart的setOption方法来绘制图表，setOption中传入一个对象，在echarts官网中可得知需要配置xAxis、yAxis、series属性来绘制图表的基础框架，更多样式设置可以参考echarts官网，另外grid属性是设置图表具体位置的属性，可以调整上下左右的位置，且grid属性中有一个属性名为containLabel，是调整grid区域内是否包含坐标轴的刻度标签，默认值为false，即无法看到x轴和y轴的文本，改为true，就可以看到。
-* 7.4 
+* 7.4 每日访客统计图表--LeftBottomChart
+    * 在左下展示每日访客统计图，和人数统计图表的基本框架一样，在LeftBottomChart组件引入inject方法，接收来自祖先组件的数据。再引入onMounted钩子，用于DOM成功加载后，绘制图表，在其指定的回调中获取为了绘制图表而设置的标签节点，调用echarts的init方法来初始化，将其赋值给变量LeftBottomChart。随后引入link函数和apiUrl，调用link函数将apiUrl.chartDataLeftBottom路径作为参数传入，以此获取数据，调用then方法，在其成功的回调中调用LeftBottomChart的setOption方法，在其中配置图标的x轴、y轴、图表类型、图表的位置等，其中tooltip属性是提示框组件，将鼠标移到每个数据点，会出现提示框来展示x轴和y轴的具体数据。

@@ -38,6 +38,7 @@ onMounted(()=>{
     LeftTopchart.setOption({
       // x轴
       xAxis:{
+        // 展示值
         type:"value",
         axisLine:{
           // 设置x轴样式
@@ -48,6 +49,7 @@ onMounted(()=>{
       },
       // y轴
       yAxis:{
+        // 展示类别
         type:"category",
         data:xData,
         axisLine:{
@@ -68,8 +70,8 @@ onMounted(()=>{
       },
       // 系列
       series:[
-        // 类型为柱状图
         {
+          // 类型为柱状图
           type:"bar",
           data:yData,
           itemStyle:{

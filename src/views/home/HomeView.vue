@@ -27,7 +27,7 @@
     // background: #ccf;
   }
   .el-main{
-    background: #bfa;
+    // background: #bfa;
   }
   .el-container,.el-aside,.common-layout,#app,body,html{
     height:100%;

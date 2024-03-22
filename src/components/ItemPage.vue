@@ -14,6 +14,6 @@
       height:5.125rem;
       border: 1px solid rgb(166, 164, 164);
       margin: .25rem;
-      background: violet;
+      background: rgba(115, 84, 84, 0.899);
   }
 </style>

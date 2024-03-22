@@ -50,7 +50,7 @@ import RightBottomChart from "@/components/RightBottomChart.vue";
     width:100%;
     // 居中
     margin:0 auto;
-    background: gold;
+    // background: gold;
     // 设置flex布局
     display: flex;
     .itemleft,.itemright{

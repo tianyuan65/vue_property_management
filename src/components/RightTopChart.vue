@@ -1,5 +1,5 @@
 <template>
-  <div>报修统计图</div>
+  <h2>报修统计图</h2>
   <div id="chartRightTop" class="chartRightTop"></div>
 </template>
 

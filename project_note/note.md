@@ -1094,3 +1094,5 @@
     * 在左下展示每日访客统计图，和人数统计图表的基本框架一样，在LeftBottomChart组件引入inject方法，接收来自祖先组件的数据。再引入onMounted钩子，用于DOM成功加载后，绘制图表，在其指定的回调中获取为了绘制图表而设置的标签节点，调用echarts的ini t方法来初始化，将其赋值给变量LeftBottomChart。随后引入link函数和apiUrl，调用link函数将apiUrl.chartDataLeftBottom路径作为参数传入，以此获取数据，调用then方法，在其成功的回调中调用LeftBottomChart的setOption方法，在其中配置图标的x轴、y轴、图表类型、图表的位置等，其中tooltip属性是提示框组件，将鼠标移到每个数据点，会出现提示框来展示x轴和y轴的具体数据。
 * 7.5 报修统计图--RightTopChart
     * 在右上展示报修统计图，绘制饼状图，和上面的创建基础框架一样，提前设置展示图表的标签，并为其设置节点。引入调用inject，用于接收来自祖先组件的数据，引入调用onMounted、link函数、apiUrl，在onMounted指定的回调中，调用echarts的init方法来初始化并获取节点并赋值给变量chartRightTop。调用link函数，传入apiUrl.chartDataRightTop路径作为参数，来获取数据，在其成功的回调中，调用chartRightTop的setOption方法，在其中的series配置中指定图表类型--type，要展示的数据--data，指定饼状图的内圈和外圈的半径--radius，饼图的中心坐标--center和是否展示为南丁格尔图--roseType的配置。除了配置在在series的属性外，与series同级别中可配置legend，用于在饼图的上、下、左或右方展示绘制的图表的详细名称颜色呈现，点击可取消或展示数据内属性。tooltip配置，用于在鼠标移入时，弹出提示框，在提示框中呈现具体值。
+* 7.6 车位统计--RightBottomChart
+    * 在右下展示车位统计，绘制柱状图，基本框架与在左上绘制的柱状图一样，x轴展示类别，也就是data中的day；y轴展示值，在series配置，指定图表类型，将type值设置为bar，并将data属性的值设置为data.num里的属性，配置stack属性值为total，来实现数据堆叠。添加grid配置来在里面设置图标的位置，和使在grid区域包含坐标轴的刻度标签。配置tooltip，鼠标移入时，弹出提示框，在提示框内展示每一扇数据的具体值，也可以在tooltip属性中，添加样式的配置来在鼠标移入时，有更丰富的效果。

@@ -1096,3 +1096,7 @@
     * 在右上展示报修统计图，绘制饼状图，和上面的创建基础框架一样，提前设置展示图表的标签，并为其设置节点。引入调用inject，用于接收来自祖先组件的数据，引入调用onMounted、link函数、apiUrl，在onMounted指定的回调中，调用echarts的init方法来初始化并获取节点并赋值给变量chartRightTop。调用link函数，传入apiUrl.chartDataRightTop路径作为参数，来获取数据，在其成功的回调中，调用chartRightTop的setOption方法，在其中的series配置中指定图表类型--type，要展示的数据--data，指定饼状图的内圈和外圈的半径--radius，饼图的中心坐标--center和是否展示为南丁格尔图--roseType的配置。除了配置在在series的属性外，与series同级别中可配置legend，用于在饼图的上、下、左或右方展示绘制的图表的详细名称颜色呈现，点击可取消或展示数据内属性。tooltip配置，用于在鼠标移入时，弹出提示框，在提示框中呈现具体值。
 * 7.6 车位统计--RightBottomChart
     * 在右下展示车位统计，绘制柱状图，基本框架与在左上绘制的柱状图一样，x轴展示类别，也就是data中的day；y轴展示值，在series配置，指定图表类型，将type值设置为bar，并将data属性的值设置为data.num里的属性，配置stack属性值为total，来实现数据堆叠。添加grid配置来在里面设置图标的位置，和使在grid区域包含坐标轴的刻度标签。配置tooltip，鼠标移入时，弹出提示框，在提示框内展示每一扇数据的具体值，也可以在tooltip属性中，添加样式的配置来在鼠标移入时，有更丰富的效果。
+
+## 八、首页--支付模块
+* 8.1 二维码生成
+    * 安装qrcodejs2插件，可以用来快速生成二维码。安装成功后，引入QRcode构造函数，声明一个按钮，在输入框输入内容，点击按钮时生成二维码，给button绑定createQrcode事件函数，在createQrcode事件函数中，调用nextTick方法，意为在DOM加载完毕后生成二维码。在nextTick指定的回调中，实例化QRcode构造函数，第一个参数是展示二维码的标签绑定的属性(可以是id、class、ref)，第二个参数是对象，对象中可以指定生成的二维码内容、二维码的颜色、背景色等。最后在createQrcode事件函数内的最前面，需要在每次生成新二维码时，将上一次生成的二维码清空，```qrcodeDom.value.innerHTML=""```。最后的最后，我失败了，没有成功生成二维码，报错提示为无法找到qrcodejs。

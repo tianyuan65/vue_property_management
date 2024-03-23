@@ -26,5 +26,10 @@ module.exports = defineConfig({
         resolvers: [ElementPlusResolver()],
       }),
     ],
+    // resolve: {
+    //   alias: {
+    //     'qrcodejs': 'path/to/node_modules/qrcodejs/dist/qrcode.min.js'
+    //   }
+    // }
   }
 })
